@@ -110,7 +110,7 @@ async function searchInventary(idWhatsapp) {
 // Atualizar dados de um item dentro do inventario
 async function updateItemInventary(idWhatsapp, idItem, dados) {
     try {
-        const resposta =  axios.patch(URL_DB + `/api/inventory//updateItemInvetary/${idWhatsapp}/item/${idItem}`, dados, {
+        const resposta =  axios.patch(URL_DB + `/api/inventory/updateItemInvetary/${idWhatsapp}/item/${idItem}`, dados, {
             headers: {
                 'Content-Type': 'application/json'
             }
@@ -120,6 +120,23 @@ async function updateItemInventary(idWhatsapp, idItem, dados) {
         
     } catch (error) {
         console.log("Erro ao atualizar item")
+    }
+}
+
+// Função para adicionar item em um inventario
+export async function addItemInventary(idWhatsapp, item){
+    try {
+        // Usando uma rota post para adicionar um item no inventario do usuario
+        const resposta = await axios.post(URL_DB + `/api/inventory/addItemInventary`, {idWhatsapp: idWhatsapp, item: item }, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+
+        return resposta; // Retorno se foi cadastrado ou não.
+        
+    } catch (error) {
+        return console.log(error), error // Retorna erro para a varivael que chamou
     }
 }
 
