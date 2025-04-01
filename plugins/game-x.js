@@ -11,8 +11,7 @@ const handler = async (m, { conn, args, usedPrefix, command }) => {
         const dadosUsuario = await searchUser(m.sender) //  buscando dados do usuario no banco
         const isCadastrado = dadosUsuario.data.user ? true : false; // Verificando se o usuario existe n banco de dados
         const Usuario = dadosUsuario.data.user // Pegando apenas os dados do usuario que mandou mensagem
-        const inventarioFull = await searchInventary(m.sender) 
-        const ivt = inventarioFull.inventario // pegando apenas o inventario do usuario que est alogado.
+       
 
 
         let id
@@ -23,6 +22,11 @@ const handler = async (m, { conn, args, usedPrefix, command }) => {
         if(args[0] === undefined && isCadastrado === false){
             return m.reply(`✋🏻🛑⛔️ Use: *${usedPrefix}${command} register*\n\n\`\`\`Primeiro cadastre-se no gameX\`\`\``)
         }
+
+       /* APARTIR DAQUI TODAS AS VARIAVEIS DO USARIO JA EXISTENTE*/
+       
+        const inventarioFull = await searchInventary(m.sender) 
+        const ivt = inventarioFull.inventario // pegando apenas o inventario do usuario que est alogado.
          
          
 

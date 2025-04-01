@@ -19,32 +19,6 @@ async function registerUser(dados) {
     }
 }
 
-async function createInventary(usuarioId, items) {
-    try{
-
-    let dados = {
-        usuarioId: usuarioId,
-        items: items
-    }
-
-    //Criando a requisação para a API
-    const resposta = await axios.post(  URL_DB + '/api/inventory/createInventary', dados , {
-        headers: {
-            "Content-Type": "application/json"
-        }
-    })
-
-    return resposta;
-
-    }catch(error){
-        console.log(error)
-        return error;
-    }
-
-
-}
-
-
 // Buscar dados usuario
 async function searchUser(idWhatsapp) {
     try {
@@ -84,6 +58,33 @@ async function updateUser(idWhatsapp, dados) {
     } catch (error) {
         return console.log(error, "Erro ao atualizar dados")
     }
+}
+
+// INVENTARIO INICIO -------------------------------------------------------------------------------------------
+
+async function createInventary(usuarioId, items) {
+    try{
+
+    let dados = {
+        usuarioId: usuarioId,
+        items: items
+    }
+
+    //Criando a requisação para a API
+    const resposta = await axios.post(  URL_DB + '/api/inventory/createInventary', dados , {
+        headers: {
+            "Content-Type": "application/json"
+        }
+    })
+
+    return resposta;
+
+    }catch(error){
+        console.log(error)
+        return error;
+    }
+
+
 }
 
 // Buscar dados Inventario
@@ -139,5 +140,9 @@ export async function addItemInventary(idWhatsapp, item){
         return console.log(error), error // Retorna erro para a varivael que chamou
     }
 }
+
+
+// INVENTARIO CIDADE X -------------------------------------------------------------------------------------------
+
 
 export { registerUser, createInventary, searchInventary, searchUser, updateItemInventary, updateUser};
