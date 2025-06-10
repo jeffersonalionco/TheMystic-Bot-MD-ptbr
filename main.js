@@ -1,4 +1,3 @@
-"use strict";
 process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '1'; 
 import './config.js';
 import './api.js';
@@ -19,7 +18,10 @@ import {Boom} from '@hapi/boom';
 import {makeWASocket, protoType, serialize} from './src/libraries/simple.js';
 import {Low, JSONFile} from 'lowdb';
 import store from './src/libraries/store.js';
-const {DisconnectReason, useMultiFileAuthState, fetchLatestBaileysVersion, makeCacheableSignalKeyStore, jidNormalizedUser, PHONENUMBER_MCC} = await import("baileys");
+import pkg from 'google-libphonenumber';
+const { PhoneNumberUtil } = pkg;
+const phoneUtil = PhoneNumberUtil.getInstance();
+const {DisconnectReason, useMultiFileAuthState, fetchLatestBaileysVersion, makeCacheableSignalKeyStore, jidNormalizedUser } = await import("baileys");
 import readline from 'readline';
 import NodeCache from 'node-cache';
 const {chain} = lodash;
@@ -44,7 +46,7 @@ global.videoList = [];
 global.videoListXXX = [];
 const __dirname = global.__dirname(import.meta.url);
 global.opts = new Object(yargs(process.argv.slice(2)).exitProcess(false).parse());
-global.prefix = new RegExp('^[' + (opts['prefix'] || '*/i!#$%+£¢€¥^°=¶∆×÷π√✓©®:;?&.\\-.@').replace(/[|\\{}()[\]^$+*?.\-\^]/g, '\\$&') + ']');
+global.prefix = new RegExp('^[#!/.]')
 global.db = new Low(/https?:\/\//.test(opts['db'] || '') ? new cloudDBAdapter(opts['db']) : new JSONFile(`${opts._[0] ? opts._[0] + '_' : ''}database.json`));
 
 
@@ -104,7 +106,7 @@ loadChatgptDB();
 
 const {state, saveCreds} = await useMultiFileAuthState(global.authFile);
 
-const {version} = await fetchLatestBaileysVersion();
+const { version } = await fetchLatestBaileysVersion();
 let phoneNumber = global.botnumber || process.argv.find(arg => /^\+\d+$/.test(arg));
 
 const methodCodeQR = process.argv.includes("qr")
@@ -126,73 +128,74 @@ console.log('[ ❗ ] Por favor, seleccione solo 1 o 2.\n')
 }} while (opcion !== '1' && opcion !== '2' || fs.existsSync(`./${authFile}/creds.json`))
 }
 
-console.info = () => {} // https://github.com/skidy89/baileys actualmente no muestra logs molestos en la consola
+const filterStrings = [
+"Q2xvc2luZyBzdGFsZSBvcGVu", // "Closing stable open"
+"Q2xvc2luZyBvcGVuIHNlc3Npb24=", // "Closing open session"
+"RmFpbGVkIHRvIGRlY3J5cHQ=", // "Failed to decrypt"
+"U2Vzc2lvbiBlcnJvcg==", // "Session error"
+"RXJyb3I6IEJhZCBNQUM=", // "Error: Bad MAC" 
+"RGVjcnlwdGVkIG1lc3NhZ2U=" // "Decrypted message" 
+]
+
+    console.info = () => { }
+    console.debug = () => { }
+    ['log', 'warn', 'error'].forEach(methodName => redefineConsoleMethod(methodName, filterStrings))
+
 const connectionOptions = {
-    logger: Pino({ level: 'silent' }),
-    printQRInTerminal: opcion === '1' || methodCodeQR,
-    mobile: MethodMobile,
-    browser: opcion === '1' ? ['TheMystic-Bot-MD', 'Safari', '2.0.0'] : methodCodeQR ? ['TheMystic-Bot-MD', 'Safari', '2.0.0'] : ['Ubuntu', 'Chrome', '20.0.04'],
-    auth: {
-        creds: state.creds,
-        keys: makeCacheableSignalKeyStore(state.keys, Pino({ level: 'fatal' }).child({ level: 'fatal' })),
-    },
-    waWebSocketUrl: 'wss://web.whatsapp.com/ws/chat?ED=CAIICA',
-    markOnlineOnConnect: true,
-    generateHighQualityLinkPreview: true,
-    getMessage: async (key) => {
-        let jid = jidNormalizedUser(key.remoteJid);
-        let msg = await store.loadMessage(jid, key.id);
-        return msg?.message || "";
-    },
-    patchMessageBeforeSending: async (message) => {
-        let messages = 0;
-        global.conn.uploadPreKeysToServerIfRequired();
-        messages++;
-        return message;
-    },
-    msgRetryCounterCache: msgRetryCounterCache,
-    userDevicesCache: userDevicesCache,
-    //msgRetryCounterMap,
-    defaultQueryTimeoutMs: undefined,
-    cachedGroupMetadata: (jid) => global.conn.chats[jid] ?? {},
-    version: [2, 3000, 1015901307],
-    //userDeviceCache: msgRetryCounterCache <=== quien fue el pendejo?????
+logger: pino({ level: 'silent' }),
+printQRInTerminal: opcion == '1' ? true : methodCodeQR ? true : false,
+mobile: MethodMobile, 
+browser: opcion === '1' ? ['TheMystic-Bot-MD', 'Safari', '2.0.0'] : methodCodeQR ? ['TheMystic-Bot-MD', 'Safari', '2.0.0'] : ['Ubuntu', 'Chrome', '20.0.04'],
+auth: {
+creds: state.creds,
+keys: makeCacheableSignalKeyStore(state.keys, Pino({ level: "fatal" }).child({ level: "fatal" })),
+},
+markOnlineOnConnect: false, 
+generateHighQualityLinkPreview: true, 
+syncFullHistory: false,
+getMessage: async (key) => {
+try {
+let jid = jidNormalizedUser(key.remoteJid);
+let msg = await store.loadMessage(jid, key.id);
+return msg?.message || "";
+} catch (error) {
+return "";
+}},
+msgRetryCounterCache: msgRetryCounterCache || new Map(),
+userDevicesCache: userDevicesCache || new Map(),
+//msgRetryCounterMap,
+defaultQueryTimeoutMs: undefined,
+cachedGroupMetadata: (jid) => global.conn.chats[jid] ?? {},
+version: [2, 3000, 1023223821],
+keepAliveIntervalMs: 55000, 
+maxIdleTimeMs: 60000, 
 };
 
 global.conn = makeWASocket(connectionOptions);
 
-if (!fs.existsSync(`./${authFile}/creds.json`)) {
+if (!fs.existsSync(`./MysticSession/creds.json`)) {
 if (opcion === '2' || methodCode) {
 opcion = '2'
-if (!conn.authState.creds.registered) {  
-if (MethodMobile) throw new Error('No se puede usar un código de emparejamiento con la API móvil')
-
-let numeroTelefono
+if (!conn.authState.creds.registered) {
+let addNumber
 if (!!phoneNumber) {
-numeroTelefono = phoneNumber.replace(/[^0-9]/g, '')
-if (!Object.keys(PHONENUMBER_MCC).some(v => numeroTelefono.startsWith(v))) {
-console.log(chalk.bgBlack(chalk.bold.redBright("Comience con el código de país de su número de WhatsApp.\nEjemplo: +5219992095479\n")))
-process.exit(0)
-}} else {
-while (true) {
-numeroTelefono = await question(chalk.bgBlack(chalk.bold.yellowBright('Por favor, escriba su número de WhatsApp.\nEjemplo: +5219992095479\n')))
-numeroTelefono = numeroTelefono.replace(/[^0-9]/g, '')
-
-if (numeroTelefono.match(/^\d+$/) && Object.keys(PHONENUMBER_MCC).some(v => numeroTelefono.startsWith(v))) {
-break 
+addNumber = phoneNumber.replace(/[^0-9]/g, '')
 } else {
-console.log(chalk.bgBlack(chalk.bold.redBright("Por favor, escriba su número de WhatsApp.\nEjemplo: +5219992095479.\n")))
-}}
-rl.close()  
-} 
-
-        setTimeout(async () => {
-            let codigo = await conn.requestPairingCode(numeroTelefono)
-            codigo = codigo?.match(/.{1,4}/g)?.join("-") || codigo
-            console.log(chalk.yellow('[ ℹ️ ] introduce el código de emparejamiento en WhatsApp.'));
-            console.log(chalk.black(chalk.bgGreen(`Su código de emparejamiento: `)), chalk.black(chalk.white(codigo)))
-        }, 3000)
-}}
+do {
+phoneNumber = await question(chalk.bgBlack(chalk.bold.greenBright(`[ ❗ ] Por favor, Ingrese el número de WhatsApp.\n${chalk.bold.yellowBright(`Ejemplo: 5289×××××××`)}\n${chalk.bold.magentaBright('---> ')}`)))
+phoneNumber = phoneNumber.replace(/\D/g,'')
+if (!phoneNumber.startsWith('+')) {
+phoneNumber = `+${phoneNumber}`
+}
+} while (!await isValidPhoneNumber(phoneNumber))
+rl.close()
+addNumber = phoneNumber.replace(/\D/g, '')
+setTimeout(async () => {
+let codeBot = await conn.requestPairingCode(addNumber)
+codeBot = codeBot?.match(/.{1,4}/g)?.join("-") || codeBot
+console.log(chalk.bold.white(chalk.bgMagenta(`[ ℹ️ ] Código de vinculación: `)), chalk.bold.white(chalk.white(codeBot)))
+}, 3000)
+}}}
 }
 
 conn.isInit = false;
@@ -515,6 +518,15 @@ async function _quickTest() {
   global.support = {ffmpeg, ffprobe, ffmpegWebp, convert, magick, gm, find};
   Object.freeze(global.support);
 }
+function redefineConsoleMethod(methodName, filterStrings) {
+const originalConsoleMethod = console[methodName]
+console[methodName] = function() {
+const message = arguments[0]
+if (typeof message === 'string' && filterStrings.some(filterString => message.includes(atob(filterString)))) {
+arguments[0] = ""
+}
+originalConsoleMethod.apply(console, arguments)
+}}
 setInterval(async () => {
   if (stopped === 'close' || !conn || !conn?.user) return;
   await clearTmp();
@@ -542,3 +554,17 @@ function clockString(ms) {
   return [d, 'd ️', h, 'h ', m, 'm ', s, 's '].map((v) => v.toString().padStart(2, 0)).join('');
 }
 _quickTest().catch(console.error);
+
+async function isValidPhoneNumber(number) {
+try {
+number = number.replace(/\s+/g, '')
+if (number.startsWith('+521')) {
+number = number.replace('+521', '+52');
+} else if (number.startsWith('+52') && number[4] === '1') {
+number = number.replace('+52 1', '+52');
+}
+const parsedNumber = phoneUtil.parseAndKeepRawInput(number)
+return phoneUtil.isValidNumber(parsedNumber)
+} catch (error) {
+return false
+}}

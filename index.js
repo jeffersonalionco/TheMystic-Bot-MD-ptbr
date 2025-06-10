@@ -9,7 +9,7 @@ import chalk from 'chalk';
 import fs from 'fs'; 
 import './config.js'; //max update 2025
 
-const { PHONENUMBER_MCC } = await import('baileys');
+// const { PHONENUMBER_MCC } = await import('baileys');
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const require = createRequire(__dirname);
 const { say } = cfonts;
@@ -20,7 +20,7 @@ const question = (texto) => new Promise((resolver) => rl.question(texto, resolve
 
 console.log(chalk.yellow.bold('—◉ㅤIniciando sistema...'));
 
-function verificarOCrearCarpetaAuth() {
+/*function verificarOCrearCarpetaAuth() {
   const authPath = join(__dirname, global.authFile);
   if (!fs.existsSync(authPath)) {
     fs.mkdirSync(authPath, { recursive: true });
@@ -49,7 +49,7 @@ function formatearNumeroTelefono(numero) {
 function esNumeroValido(numeroTelefono) {
   const numeroSinSigno = numeroTelefono.replace('+', '');
   return Object.keys(PHONENUMBER_MCC).some(codigo => numeroSinSigno.startsWith(codigo));
-}
+}*/
 
 async function start(file) {
   if (isRunning) return;
@@ -67,7 +67,7 @@ async function start(file) {
     gradient: ['red', 'magenta'],
   });
 
-  verificarOCrearCarpetaAuth();
+  /*verificarOCrearCarpetaAuth();
 
   if (verificarCredsJson()) {
     const args = [join(__dirname, file), ...process.argv.slice(2)];
@@ -93,7 +93,7 @@ async function start(file) {
     process.argv.push('qr');
   } else if (opcion === '2') {
     process.argv.push('code');
-  }
+  }*/
 
   const args = [join(__dirname, file), ...process.argv.slice(2)];
   setupMaster({ exec: args[0], args: args.slice(1) });
@@ -101,7 +101,7 @@ async function start(file) {
   const p = fork();
 
   p.on('message', (data) => {
-    console.log(chalk.green.bold('—◉ㅤRECIBIDO:'), data);
+  //  console.log(chalk.green.bold('—◉ㅤRECIBIDO:'), data);
     switch (data) {
       case 'reset':
         p.process.kill();
