@@ -400,30 +400,24 @@
                 "▢ *Note :* Cette commande ne peut être utilisée que par le(s) propriétaire(s) du bot."
             ],
             "texto24": [
-                "▢ *Option :* 🤖",
-                "▢ *Commande :*",
-                "▢ *Description :* Le mode 'Intelligence Artificielle' avec ChatGPT est activé dans tous les chats privés.",
-                "▢ *Note :* Cette commande ne peut être utilisée que par le(s) propriétaire(s) du bot."
-            ],
-            "texto25": [
                 "▢ *Option :* ⏳",
                 "▢ *Commande :*",
                 "▢ *Description :* Le Bot détecte quand un utilisateur spamme une commande et le bannit pendant 5 secondes en le prévenant.",
                 "▢ *Note :* Cette commande ne peut être utilisée que par le(s) propriétaire(s) du bot."
             ],
-            "texto26": [
+            "texto25": [
                 "▢ *Option :* 🤖",
                 "▢ *Commande :*",
                 "▢ *Description :* Active ou désactive l'utilisation de la commande pour les sous-bots.",
                 "▢ *Note :* Cette commande ne peut être utilisée que par le(s) propriétaire(s) du bot."
             ],
-            "texto27": [
+            "texto26": [
                 "▢ *Option :* 💬",
                 "▢ *Commande :*",
                 "▢ *Description :* Le Bot bloquera les personnes qui écrivent en privé au Bot.",
                 "▢ *Note :* Cette commande ne peut être utilisée que par le(s) propriétaire(s) du bot."
             ],
-            "texto28": [
+            "texto27": [
                 "< FONCTIONS DU BOT />",
                 "[ ℹ️ ] L'option",
                 "a été appliquée avec succès pour ceci"
@@ -2096,10 +2090,6 @@
             "texto2": "Eh bien ! Tu triches",
             "texto3": "*[❗𝐈𝐍𝐅𝐎❗] Format non pris en charge, seuls les chiffres et les symboles suivants sont acceptés : +, -, *, /, ×, ÷, π, e, (, )*"
         },
-        "herramientas_chatgpt_del": {
-            "texto1": "*[❗] Vous avez été exclu de l'historique des messages entrants et des conversations (IA)*\n\n*—◉ N'oubliez pas que vous pouvez utiliser la commande /tengain dans le canal pour pouvoir utiliser la commande*",
-            "texto2": "*[❗] Erreur, veuillez réessayer*"
-        },
         "herramientas_chatgpt": {
             "texto1": [
                 "*[❗] Vous êtes dans une conversation ou vous devez utiliser la fonction de chatbot*\n\n*—◉ Exemples de demandes et d'ordres*\n*◉ Réflexion sur la série Merlina 2022 de Netflix*\n*◉ Code en JS pour un jeu de cartes*"
@@ -2107,13 +2097,6 @@
             "texto2": "Vous agirez en tant que Bot WhatsApp créé par BrunoSobrino, vous serez The Mystic - Bot.",
             "texto3": "Vous agirez en tant que Bot WhatsApp créé par BrunoSobrino, vous serez The Mystic - Bot.",
             "texto4": "*[❗] Erreur, veuillez réessayer*"
-        },
-        "herramientas_chatgptvoz": {
-            "texto1": [
-                "*[❗] Vous êtes dans une conversation ou vous devez utiliser la fonction de chatbot*\n\n*—◉ Exemples de demandes et d'ordres*\n*◉ Réflexion sur la série Merlina 2022 de Netflix*\n*◉ Code en JS pour un jeu de cartes*"
-            ],
-            "texto2": "Vous agirez en tant que Bot WhatsApp créé par BrunoSobrino, vous serez The Mystic - Bot.",
-            "texto3": "*[❗] Erreur, veuillez réessayer*"
         },
         "herramientas_clima": {
             "texto1": "*[❗] Entrez le nom de votre pays ou ville*",
@@ -2128,21 +2111,6 @@
                 "「 🌬️ 」 Vent :"
             ],
             "texto3": "*[❗] Aucun résultat correspondant, vérifiez si vous avez correctement saisi votre pays ou votre ville*"
-        },
-        "herramientas_dalle": {
-            "texto1": [
-                "*[❗] Entrez un texte pour créer une image et utilisez-la pour vous amuser et nous utiliser pour une fonction Dall-E.*\n\n*—◉ Exemples de demandes*\n*◉",
-                "chatons pleurant*\n*◉",
-                "baiser de Hatsune Miku*"
-            ],
-            "texto2": "*[❗] Création de l'image, veuillez patienter.*",
-            "texto3": [
-                "'[❗] Erreur dans l'API DALL-E numéro 1.'",
-                "[❗] Erreur dans l'API DALL-E numéro 2.",
-                "[❗] Erreur dans l'API DALL-E numéro 3.",
-                "[❗] Erreur, aucune API fonctionnelle.",
-                "*[❗] Erreur, aucun résultat obtenu.*"
-            ]
         },
         "herramientas_dropmail": {
             "texto1": [
