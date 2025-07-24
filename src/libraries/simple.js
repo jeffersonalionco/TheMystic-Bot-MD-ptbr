@@ -2330,15 +2330,59 @@ export function serialize() {
                   );
                 },
                 enumerable: true,
+		      mentionedJid: {
+  get() {
+    const mentioned =
+      q?.contextInfo?.mentionedJid ||
+      self.getQuotedObj()?.mentionedJid ||
+      [];
+    
+    // Necesitamos el ID del grupo para resolver los LIDs
+    const groupChatId = this.chat?.endsWith("@g.us") ? this.chat : null;
+    
+    const processJid = (user) => {
+      try {
+        if (user && typeof user === "object") {
+          user = user.lid || user.jid || user.id || "";
+        }
+        if (typeof user === "string" && user.includes("@lid") && groupChatId) {
+          // Llamada correcta al resolver LID
+          const resolved = String.prototype.resolveLidToRealJid.call(
+            user,
+            groupChatId,
+            self.conn
+          );
+          // Como no podemos hacer await aquí, devolvemos la Promise
+          return resolved.then(res => typeof res === "string" ? res : user);
+        }
+        return Promise.resolve(user);
+      } catch (e) {
+        console.error("Error processing JID:", user, e);
+        return Promise.resolve(user);
+      }
+    };
+
+    // Procesamos todos los JIDs
+    const processed = mentioned.map(processJid);
+    
+    // Retornamos una Promise que resuelve a la lista filtrada
+    return Promise.all(processed)
+      .then(jids => jids.filter(jid => jid && typeof jid === "string"))
+      .catch(e => {
+        console.error("Error in mentionedJid processing:", e);
+        return mentioned.filter(jid => jid && typeof jid === "string");
+      });
+  },
+  enumerable: true,
+},
               },
-              mentionedJid: {
+/*              mentionedJid: {
                 get() {
                   const mentioned =
                     q?.contextInfo?.mentionedJid ||
                     self.getQuotedObj()?.mentionedJid ||
                     [];
-                  return mentioned
-                    .map((user) => {
+                  return mentioned.map((user) => {
                       if (user && typeof user === "object") {
                         user = user.lid || user.jid || user.id || "";
                       }
@@ -2350,11 +2394,11 @@ export function serialize() {
                         return typeof resolved === "string" ? resolved : user;
                       }
                       return user;
-                    })
-                    .filter((jid) => jid && typeof jid === "string");
+                    }).filter((jid) => jid && typeof jid === "string");
+			
                 },
                 enumerable: true,
-              },
+              },*/
               name: {
                 get() {
                   const sender = this.sender;
@@ -2493,7 +2537,48 @@ export function serialize() {
       },
       enumerable: true,
     },
-    mentionedJid: {
+	mentionedJid: {
+  get() {
+    try {
+      const mentioned = this.msg?.contextInfo?.mentionedJid || [];
+      const groupChatId = this.chat?.endsWith("@g.us") ? this.chat : null;
+      
+      const processJid = (user) => {
+        try {
+          if (user && typeof user === "object") {
+            user = user.lid || user.jid || user.id || "";
+          }
+          if (typeof user === "string" && user.includes("@lid") && groupChatId) {
+            const resolved = String.prototype.resolveLidToRealJid.call(
+              user,
+              groupChatId,
+              this.conn
+            );
+            return resolved.then(res => typeof res === "string" ? res : user);
+          }
+          return Promise.resolve(user);
+        } catch (e) {
+          console.error("Error processing JID:", user, e);
+          return Promise.resolve(user);
+        }
+      };
+
+      const processed = mentioned.map(processJid);
+      
+      return Promise.all(processed)
+        .then(jids => jids.filter(jid => jid && typeof jid === "string"))
+        .catch(e => {
+          console.error("Error en mentionedJid getter:", e);
+          return [];
+        });
+    } catch (e) {
+      console.error("Error en mentionedJid getter:", e);
+      return Promise.resolve([]);
+    }
+  },
+  enumerable: true,
+},  
+/*    mentionedJid: {
       get() {
         try {
           const mentioned = this.msg?.contextInfo?.mentionedJid || [];
@@ -2515,7 +2600,7 @@ export function serialize() {
         }
       },
       enumerable: true,
-    },
+    },*/
     name: {
       get() {
         try {
