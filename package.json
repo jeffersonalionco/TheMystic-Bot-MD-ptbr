@@ -10,7 +10,7 @@
     "plugins": "plugins"
   },
   "scripts": {
-    "start": "node index.js",
+    "start": "node --expose-gc index.js",
     "qr": "node index.js qr",
     "code": "node index.js code",
     "eslint": "eslint .",
@@ -64,6 +64,7 @@
     "human-readable": "^0.2.1",
     "imagemaker.js": "^2.0.3",
     "jsdom": "^19.0.0",
+    "jimp": "*",
     "link-preview-js": "^3.0.0",
     "libphonenumber-js": "*",
     "lodash": "^4.17.21",
